@@ -6,9 +6,13 @@ contract('EthPolynomialCurvedToken', accounts => {
   const creator = accounts[0]
   const user1 = accounts[1]
   const user2 = accounts[2]
+  const slope = 1000;
 
   before(async () => {
-    polyBondToken1 = await EthPolynomialCurvedToken.new( 'oed curve', 18, 'OCU', 2)
+    polyBondToken1 = await EthPolynomialCurvedToken.new()
+    await polyBondToken1.initContract('oed curve', 18, 'OCU', 2, slope);
+    // await EthPolynomialCurvedToken.at('0xeb8abdba5331c5ac087999367b050fcc08c0eb4b');
+
   })
 
   it('Is initiated correcly', async () => {
@@ -24,7 +28,11 @@ contract('EthPolynomialCurvedToken', accounts => {
     // priceToMint is the same as the internal function curveIntegral if
     // totalSupply and poolBalance is zero
     const testWithExponent = async exponent => {
-      const tmpPolyToken = await EthPolynomialCurvedToken.new( 'oed curve', 18, 'OCU', exponent)
+      // const tmpPolyToken = await EthPolynomialCurvedToken.new( 'oed curve', 18, 'OCU', exponent, slope)
+      const tmpPolyToken = await EthPolynomialCurvedToken.new()
+      await tmpPolyToken.initContract('oed curve', 18, 'OCU', exponent, slope);
+      const e = await tmpPolyToken.exponent.call()
+
       let res
       let jsres
       let last = 0

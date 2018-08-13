@@ -1,20 +1,14 @@
+require('dotenv').config();
+
 //HD Wallet for keyless servers (infura)
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const TestRPC = require("ganache-cli");
 
 let provider
 
-function getNmemonic() {
-  try{
-    return require('fs').readFileSync("./seed", "utf8").trim();
-  } catch(err){
-    return "";
-  }
-}
-
 function getProvider(rpcUrl) {
   if (!provider) {
-    provider = new HDWalletProvider(getNmemonic(), rpcUrl)
+    provider = new HDWalletProvider(process.env.MNEMONIC, rpcUrl + process.env.INFURA_API_KEY)
   }
   return provider
 }
