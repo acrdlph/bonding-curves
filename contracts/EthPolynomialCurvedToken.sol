@@ -45,7 +45,7 @@ contract EthPolynomialCurvedToken is EthBondingCurvedToken {
         bytes32 _hash,
         uint8 _hashFunction,
         uint8 _size
-    ) public {
+    ) public payable {
         require(!initalized);
         // extra precautions
         require(poolBalance == 0 && totalSupply_ == 0);
@@ -77,7 +77,8 @@ contract EthPolynomialCurvedToken is EthBondingCurvedToken {
     /// @param t    The number to integrate to
     function curveIntegral(uint256 t) internal returns (uint256) {
         uint256 nexp = exponent + 1;
-        return (t ** nexp).div(nexp).div(slope);
+        // todo use decimals!
+        return (t ** nexp).div(nexp).div(slope).div((10 ** (uint256(decimals) * uint256(exponent))));
     }
 
     function priceToMint(uint256 numTokens) public returns(uint256) {

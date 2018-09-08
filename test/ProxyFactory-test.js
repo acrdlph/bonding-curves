@@ -66,6 +66,8 @@ contract('ProxyFactory', accounts => {
   let token;
   let token2;
 
+  const user1 = accounts[1]
+  const user2 = accounts[2]
 
   before(async () => {
     instance = await ProxyFactory.new();
@@ -114,6 +116,41 @@ contract('ProxyFactory', accounts => {
     assert.equal(name, 'slava\'s sweet token')
     const symbol = await token2.symbol.call()
     assert.equal(symbol, 'nu token')
+  })
+
+it('Can mint tokens with ether', async function() {
+    let balance = await token.balanceOf(user1)
+    assert.equal(balance.toNumber(), 0)
+    let amount = 1 * 1e18;
+
+    const priceToMint1 = await token.priceToMint.call(amount)
+
+    let tx = await token.mint(amount, {value: priceToMint1, from: user1})
+    assert.equal(tx.logs[0].args.amount.toNumber(), amount, 'amount minted should be 50')
+    balance = await token.balanceOf(user1)
+    assert.equal(tx.logs[0].args.totalCost.toNumber(), priceToMint1)
+    const poolBalance1 = await token.poolBalance.call()
+    assert.equal(poolBalance1.toNumber(), priceToMint1.toNumber(), 'poolBalance should be correct')
+
+    const priceToMint2 = await token.priceToMint.call(amount)
+    assert.isAbove(priceToMint2.toNumber(), priceToMint1)
+    tx = await token.mint(amount, {value: priceToMint2, from: user2})
+    assert.equal(tx.logs[0].args.amount.toNumber(), amount, 'amount minted should be 50')
+    assert.equal(tx.logs[0].args.totalCost.toNumber(), priceToMint2)
+    const poolBalance2 = await token.poolBalance.call()
+    assert.equal(poolBalance2.toNumber(), priceToMint1.toNumber() + priceToMint2.toNumber(), 'poolBalance should be correct')
+
+    const totalSupply = await token.totalSupply.call()
+    assert.equal(totalSupply.toNumber(), amount * 2)
+
+    let didThrow = false
+    const priceToMint3 = await token.priceToMint.call(amount)
+    try {
+      tx = await token.mint(amount, {value: token2.toNumber() - 1, from: user2})
+    } catch (e) {
+      didThrow = true
+    }
+    assert.isTrue(didThrow)
   })
 
   // now this is stored in logs - needs test
