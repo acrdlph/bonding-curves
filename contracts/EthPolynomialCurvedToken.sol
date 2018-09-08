@@ -77,7 +77,6 @@ contract EthPolynomialCurvedToken is EthBondingCurvedToken {
     /// @param t    The number to integrate to
     function curveIntegral(uint256 t) internal returns (uint256) {
         uint256 nexp = exponent + 1;
-        // todo use decimals!
         return (t ** nexp).div(nexp).div(slope).div((10 ** (uint256(decimals) * uint256(exponent))));
     }
 
