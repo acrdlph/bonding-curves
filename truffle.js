@@ -8,7 +8,8 @@ let provider
 
 function getProvider(rpcUrl) {
   if (!provider) {
-    provider = new HDWalletProvider(process.env.MNEMONIC, rpcUrl + process.env.INFURA_API_KEY)
+    provider = new HDWalletProvider(process.env.KOVAN_MNEMONIC, rpcUrl + process.env.INFURA_API_KEY)
+    // provider = new HDWalletProvider(process.env.MNEMONIC, rpcUrl + process.env.INFURA_API_KEY)
   }
   return provider
 }
@@ -53,7 +54,7 @@ module.exports = {
       get provider() {
         return getProvider("https://kovan.infura.io/")
       },
-      gas: 4004580,
+      // gas: 4004580,
       network_id: 42
     },
     mainnet: {
